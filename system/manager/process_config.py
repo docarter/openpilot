@@ -108,7 +108,7 @@ def and_(*fns):
   return lambda *args: operator.and_(*(fn(*args) for fn in fns))
 
 procs = [
-  DaemonProcess("manage_athenad", "system.athena.manage_athenad", "AthenadPid"),
+  # DaemonProcess("manage_athenad", "system.athena.manage_athenad", "AthenadPid"), # Disabled for virtual testing
 
   NativeProcess("loggerd", "system/loggerd", ["./loggerd"], logging),
   NativeProcess("encoderd", "system/loggerd", ["./encoderd"], only_onroad),
@@ -123,7 +123,7 @@ procs = [
   PythonProcess("timed", "system.timed", always_run, enabled=not PC),
 
   PythonProcess("modeld", "selfdrive.modeld.modeld", and_(only_onroad, is_stock_model)),
-  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=(WEBCAM or not PC)),
+  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=False), # Disabled for virtual testing
 
   PythonProcess("sensord", "system.sensord.sensord", only_onroad, enabled=not PC),
   PythonProcess("ui", "selfdrive.ui.ui", always_run, restart_if_crash=True),
@@ -139,7 +139,7 @@ procs = [
   PythonProcess("selfdrived", "selfdrive.selfdrived.selfdrived", only_onroad),
   PythonProcess("card", "selfdrive.car.card", only_onroad),
   PythonProcess("deleter", "system.loggerd.deleter", always_run),
-  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", driverview, enabled=(WEBCAM or not PC)),
+  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", driverview, enabled=False), # Disabled for virtual testing
   # BluePilot: restart_if_crash -- a diag-port serial fault (see qcomgpsd.py's reconnect
   # handling) is now recovered in-process, but this is a backstop for anything else that
   # still takes the process down; without it a crash meant no GPS for the rest of the drive.
@@ -157,8 +157,8 @@ procs = [
   PythonProcess("modem", "system.hardware.tici.modem", always_run, enabled=TICI),
   PythonProcess("tombstoned", "system.tombstoned", always_run, enabled=not PC),
   PythonProcess("updated", "system.updated.updated", only_offroad, enabled=not PC),
-  PythonProcess("uploader", "system.loggerd.uploader", uploader_ready),
-  PythonProcess("statsd", "system.statsd", always_run),
+  # PythonProcess("uploader", "system.loggerd.uploader", uploader_ready), # Disabled for virtual testing
+  # PythonProcess("statsd", "system.statsd", always_run), # Disabled for virtual testing
   PythonProcess("feedbackd", "selfdrive.ui.feedback.feedbackd", only_onroad),
 
   # debug procs
@@ -168,9 +168,9 @@ procs = [
   PythonProcess("joystick", "tools.joystick.joystick_control", and_(joystick, iscar)),
 
   # sunnylink <3
-  DaemonProcess("manage_sunnylinkd", "sunnypilot.sunnylink.athena.manage_sunnylinkd", "SunnylinkdPid"),
-  PythonProcess("sunnylink_registration_manager", "sunnypilot.sunnylink.registration_manager", sunnylink_need_register_shim),
-  PythonProcess("statsd_sp", "sunnypilot.sunnylink.statsd", and_(always_run, sunnylink_ready_shim)),
+  # DaemonProcess("manage_sunnylinkd", "sunnypilot.sunnylink.athena.manage_sunnylinkd", "SunnylinkdPid"), # Disabled
+  # PythonProcess("sunnylink_registration_manager", "sunnypilot.sunnylink.registration_manager", sunnylink_need_register_shim), # Disabled
+  # PythonProcess("statsd_sp", "sunnypilot.sunnylink.statsd", and_(always_run, sunnylink_ready_shim)), # Disabled
 ]
 
 # sunnypilot
@@ -180,7 +180,7 @@ procs += [
   NativeProcess("modeld_tinygrad", "sunnypilot/modeld_v2", ["./modeld"], and_(only_onroad, is_tinygrad_model)),
 
   # Backup
-  PythonProcess("backup_manager", "sunnypilot.sunnylink.backups.manager", and_(only_offroad, sunnylink_ready_shim)),
+  # PythonProcess("backup_manager", "sunnypilot.sunnylink.backups.manager", and_(only_offroad, sunnylink_ready_shim)), # Disabled
 
   # mapd
   NativeProcess("mapd", Paths.mapd_root(), ["bash", "-c", f"{MAPD_PATH} > /dev/null 2>&1"], mapd_ready),
@@ -205,7 +205,8 @@ if os.path.exists("./github_runner.sh"):
   procs += [NativeProcess("github_runner_start", "system/manager", ["./github_runner.sh", "start"], and_(only_offroad, use_github_runner), sigkill=False)]
 
 if os.path.exists("../../sunnypilot/sunnylink/uploader.py"):
-  procs += [PythonProcess("sunnylink_uploader", "sunnypilot.sunnylink.uploader", use_sunnylink_uploader_shim)]
+  pass
+  # procs += [PythonProcess("sunnylink_uploader", "sunnypilot.sunnylink.uploader", use_sunnylink_uploader_shim)]
 
 if os.path.exists("../../third_party/copyparty/copyparty-sfx.py"):
   sunnypilot_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -216,6 +217,6 @@ if os.path.exists("../../third_party/copyparty/copyparty-sfx.py"):
   copyparty_args += ["-p8080"]
   copyparty_args += ["-z"]
   copyparty_args += ["-q"]
-  procs += [NativeProcess("copyparty-sfx", "third_party/copyparty", ["./copyparty-sfx.py", *copyparty_args], and_(only_offroad, use_copyparty))]
+  # procs += [NativeProcess("copyparty-sfx", "third_party/copyparty", ["./copyparty-sfx.py", *copyparty_args], and_(only_offroad, use_copyparty))]
 
 managed_processes = {p.name: p for p in procs}
