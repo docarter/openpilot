@@ -317,7 +317,7 @@ class UpdateAlert(AbstractAlert):
     self._html_renderer = HtmlRenderer(text="")
 
   def refresh(self) -> bool:
-    update_available: bool = self.params.get_bool("UpdateAvailable")
+    update_available: bool = False # self.params.get_bool("UpdateAvailable")
     no_release_notes = "<h2>" + tr("No release notes available.") + "</h2>"
 
     if update_available:
