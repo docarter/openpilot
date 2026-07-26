@@ -99,6 +99,7 @@ class Tici(HardwareBase):
       return int(f.read())
 
   def set_ir_power(self, percent: int):
+    return # Disabled for virtual testing to save power
     if self.get_device_type() == "tizi":
       return
 
