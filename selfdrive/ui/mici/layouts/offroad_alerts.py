@@ -255,7 +255,7 @@ class MiciOffroadAlerts(Scroller):
     active_count = 0
 
     # Handle UpdateAvailable alert specially
-    update_available = self._pending_params["UpdateAvailable"]
+    update_available = False # self._pending_params["UpdateAvailable"]
     update_alert_data = next((alert_data for alert_data in self.sorted_alerts if alert_data.key == "UpdateAvailable"), None)
 
     if update_alert_data:
