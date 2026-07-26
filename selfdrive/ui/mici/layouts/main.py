@@ -63,8 +63,8 @@ class MiciMainLayout(Scroller):
 
     # Start onboarding if terms or training not completed, make sure to push after self
     self._onboarding_window = OnboardingWindow(lambda: gui_app.pop_widgets_to(self))
-    if not self._onboarding_window.completed:
-      gui_app.push_widget(self._onboarding_window)
+    # if not self._onboarding_window.completed:
+    #   gui_app.push_widget(self._onboarding_window)
 
   def _setup_callbacks(self):
     self._home_layout.set_callbacks(on_settings=lambda: gui_app.push_widget(self._settings_layout))
