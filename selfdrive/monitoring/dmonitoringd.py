@@ -14,7 +14,7 @@ def dmonitoringd_thread():
                             'carControl'], poll='driverStateV2')
 
   DM = DriverMonitoring(rhd_saved=params.get_bool("IsRhdDetected"), always_on=params.get_bool("AlwaysOnDM"))
-  demo_mode=False
+  demo_mode=True # Bypassed for virtual testing
 
   # 20Hz <- dmonitoringmodeld
   while True:
@@ -36,7 +36,7 @@ def dmonitoringd_thread():
     # load live always-on toggle
     if sm['driverStateV2'].frameId % 40 == 1:
       DM.always_on = params.get_bool("AlwaysOnDM")
-      demo_mode = params.get_bool("IsDriverViewEnabled")
+      demo_mode = True # params.get_bool("IsDriverViewEnabled") # Bypassed for virtual testing
 
     # save rhd virtual toggle every 5 mins
     if (sm['driverStateV2'].frameId % 6000 == 0 and not demo_mode and
